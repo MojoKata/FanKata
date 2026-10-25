@@ -1,0 +1,42 @@
+[Unit]
+Description=Fankata fan control
+Documentation=file:///usr/share/doc/fankata/README.md
+After=systemd-modules-load.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/opt/fankata/bin/fankatad
+# Runs after every stop, including crashes and SIGKILL: fans return to their defaults.
+ExecStopPost=/opt/fankata/bin/fankatad --restore
+Restart=on-failure
+RestartSec=2
+WatchdogSec=10
+TimeoutStopSec=20
+RuntimeDirectory=fankata
+RuntimeDirectoryMode=0755
+# Keep original.json across restarts so a restart never records Fankata's own
+# manual mode as a fan's default.
+RuntimeDirectoryPreserve=restart
+ConfigurationDirectory=fankata
+ConfigurationDirectoryMode=0755
+
+# Hardening. /sys stays writable (needed for pwm*); do not add ProtectKernelTunables.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateNetwork=yes
+RestrictAddressFamilies=AF_UNIX
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

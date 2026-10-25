@@ -1,0 +1,63 @@
+# Demo configuration matching the mockups (used with tests/fakesysfs.py).
+version = 1
+
+[[curves]]
+name = "Quiet"
+allow_zero = false
+points = [[20, 20], [40, 25], [55, 35], [70, 60], [85, 100]]
+
+[[curves]]
+name = "Balanced"
+allow_zero = false
+points = [[20, 25], [40, 30], [60, 45], [75, 75], [85, 100]]
+
+[[curves]]
+name = "Performance"
+allow_zero = false
+points = [[20, 40], [45, 55], [60, 75], [75, 100]]
+
+[[curves]]
+name = "Pump steady"
+allow_zero = false
+points = [[20, 60], [40, 70], [60, 85], [70, 100]]
+
+[[curves]]
+name = "Silent night"
+allow_zero = true
+points = [[30, 0], [50, 10], [65, 30], [80, 70], [90, 100]]
+
+[[curves]]
+name = "Full blast"
+allow_zero = false
+points = [[0, 100], [100, 100]]
+
+[[probes]]
+name = "blend"
+expr = "sys.cpu * .9 + sys.gpu / 10"
+
+[[probes]]
+name = "loop"
+expr = "(sys.coolant - 25) * 2 + 25"
+
+[fans."nct6798:pwm2"]
+name = "CPU Fan"
+curve = "Quiet"
+probe = "sys.cpu"
+
+[fans."nct6798:pwm3"]
+name = "Front Intake"
+
+[fans."nct6798:pwm4"]
+name = "Rear Exhaust"
+curve = "Balanced"
+probe = "sys.cpu"
+
+[fans."nzxt-kraken3:pwm1"]
+name = "AIO Pump"
+curve = "Pump steady"
+probe = "loop"
+
+[fans."nzxt-kraken3:pwm2"]
+name = "Radiator Fan"
+curve = "Balanced"
+probe = "loop"

@@ -1,0 +1,20 @@
+Fankata for Windows bundles the following third-party software, unmodified.
+
+PawnIO driver installer 2.2.0 (installed only if PawnIO is not already present)
+  License: GNU General Public License v2.0 or later
+  Source:  https://github.com/namazso/PawnIO  (installer: https://github.com/namazso/PawnIO.Setup)
+
+LibreHardwareMonitorLib 0.9.6 and its dependency DLLs (in _internal\lhm)
+  License: Mozilla Public License 2.0 (dependencies under their own licenses, mostly MIT)
+  Source:  https://github.com/LibreHardwareMonitor/LibreHardwareMonitor
+
+Qt for Python (PySide6-Essentials, shiboken6) 6.9.3 and the Qt 6 libraries
+  License: GNU Lesser General Public License v3.0
+  Source:  https://code.qt.io/cgit/pyside/pyside-setup.git/
+
+Python 3.12 runtime (bundled by PyInstaller)
+  License: Python Software Foundation License
+
+pywin32 312            License: PSF-style           Source: https://github.com/mhammond/pywin32
+pythonnet 3.2.0        License: MIT                 Source: https://github.com/pythonnet/pythonnet
+clr_loader 0.3.1       License: MIT                 Source: https://github.com/pythonnet/clr-loader

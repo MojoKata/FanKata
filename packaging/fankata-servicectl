@@ -1,0 +1,14 @@
+#!/bin/sh
+# Turn the Fankata fan control service on or off. Run by the Fankata app through
+# pkexec (polkit action org.fankata.service): users signed in at the PC need no
+# password, anyone else must authenticate as an administrator.
+#
+# Turning it off stops the service, which returns every fan to its default
+# (firmware) control, and keeps it off across reboots.
+set -eu
+case "${1:-}" in
+    enable)  exec systemctl enable --now fankata.service ;;
+    disable) exec systemctl disable --now fankata.service ;;
+    status)  exec systemctl is-active fankata.service ;;
+    *)       echo "usage: fankata-servicectl enable|disable|status" >&2; exit 2 ;;
+esac

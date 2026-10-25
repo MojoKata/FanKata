@@ -1,0 +1,18 @@
+Package: fankata
+Version: @VERSION@
+Architecture: amd64
+Maintainer: Fankata <dwgriffin@cobaltiron.com>
+Installed-Size: @SIZE@
+Section: utils
+Priority: optional
+Depends: python3 (>= 3.10), polkitd | policykit-1, pkexec | policykit-1, libegl1, libgl1, libopengl0, libfontconfig1, libfreetype6, libxkbcommon0, libxkbcommon-x11-0, libx11-6, libx11-xcb1, libxcb1, libxcb-cursor0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render-util0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-xfixes0, libxcb-xinerama0, libxcb-xkb1, libdbus-1-3, libgssapi-krb5-2, libglib2.0-0 | libglib2.0-0t64, libwayland-client0, libwayland-cursor0, libwayland-egl1
+Recommends: fonts-dejavu-core, lm-sensors
+Description: fan control with temperature curves
+ Fankata controls PWM fans, AIO coolers and pumps from temperature curves.
+ Curves map a probe (a system temperature sensor, or a custom expression
+ combining several) to a fan speed, drawn and evaluated with the same
+ monotone smoothing.
+ .
+ A small root service (fankatad) applies the curves and keeps running when the
+ window is closed. When it stops, or a fan is unmanaged, every fan returns to
+ its original firmware control.

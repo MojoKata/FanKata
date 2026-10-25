@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ] && [ -d /run/systemd/system ]; then
+    systemctl daemon-reload || true
+    systemctl enable fankata.service >/dev/null 2>&1 || true
+    systemctl restart fankata.service || echo "fankata: the service did not start; see: journalctl -u fankata" >&2
+fi
+exit 0

@@ -1,0 +1,12 @@
+#!/usr/bin/python3 -I
+# Troubleshoot fans, the root half: run by the Fankata app through pkexec
+# (polkit action org.fankata.troubleshoot, which asks for an administrator password).
+# See fankatad/tshelper.py for the subcommands.
+import sys
+
+sys.dont_write_bytecode = True
+sys.path[:0] = ["/opt/fankata/lib", "/opt/fankata/vendor/core"]
+
+from fankatad.tshelper import main  # noqa: E402
+
+sys.exit(main())

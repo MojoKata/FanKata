@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Fankata
+GenericName=Fan Control
+Comment=Control fan and pump speeds with temperature curves
+Exec=fankata
+Icon=fankata
+Terminal=false
+Categories=System;Monitor;Utility;
+Keywords=fan;cooling;temperature;pwm;hwmon;curve;pump;
+StartupNotify=true

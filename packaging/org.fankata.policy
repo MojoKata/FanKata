@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Fankata</vendor>
+  <icon_name>fankata</icon_name>
+  <action id="org.fankata.control">
+    <description>Change fan control settings</description>
+    <message>Authentication is required to change how Fankata controls your fans.</message>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+  </action>
+  <action id="org.fankata.service">
+    <description>Turn the Fankata fan control service on or off</description>
+    <message>Authentication is required to turn Fankata's fan control on or off.</message>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/opt/fankata/bin/fankata-servicectl</annotate>
+  </action>
+  <action id="org.fankata.troubleshoot">
+    <description>Troubleshoot fans: scan for fan chips and load their drivers</description>
+    <message>Authentication is required to scan for fan chips, install lm-sensors, load fan drivers or change boot options.</message>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/opt/fankata/bin/fankata-troubleshoot</annotate>
+  </action>
+</policyconfig>

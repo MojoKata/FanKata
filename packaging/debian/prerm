@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+# Stopping the service returns every fan to its default state.
+if [ -d /run/systemd/system ]; then
+    case "$1" in
+        remove|deconfigure) systemctl stop fankata.service || true
+                            systemctl disable fankata.service >/dev/null 2>&1 || true ;;
+        upgrade)            systemctl stop fankata.service || true ;;
+    esac
+fi
+exit 0

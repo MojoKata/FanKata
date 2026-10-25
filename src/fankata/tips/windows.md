@@ -1,0 +1,8 @@
+- **Quit other fan or RGB software:** Armoury Crate, iCUE, NZXT CAM, MSI Center, Gigabyte Control Center (and SIV, EasyTune, RGB Fusion), SignalRGB, FanControl. They can lock the fan chip or a cooler's USB link.
+- **BIOS:** set the fan headers to *PWM* or *Auto*, not *Full speed*. On Gigabyte boards (Smart Fan 5/6) set *Fan Control Mode* to PWM for 4-pin fans and Voltage for 3-pin ones.
+- **Repair PawnIO:** the troubleshooter's **Repair** runs the driver's installer again. Reinstalling Fankata does the same.
+- **Driver blocked:** Windows Security → Device security → Core isolation shows blocked drivers. Event Viewer → System lists why.
+- **Laptops:** the embedded controller runs the fans, and most have no software control. Use the maker's app.
+- **Unsupported chip:** Fankata reads hardware through LibreHardwareMonitor 0.9.6. Search its [issues](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues) for your chip or board.
+- **Hubs and splitters** share one control, so their fans appear as one.
+- Still stuck? **Copy report** and attach it to an issue.
