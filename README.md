@@ -143,7 +143,7 @@ make            # = make deb windows zip; everything lands in releases/
 | `make deb` | `fankata_<ver>_amd64.deb` + `.sha256` (runs the unit tests first) |
 | `make windows` | `Fankata-<ver>-setup.exe` + `.sha256` |
 | `make zip` | `source.zip`: every file in the repo except what `.gitignore` excludes (build outputs, `releases/`, Python caches) |
-| `make test` / `make test-deb` / `make test-windows` | unit tests / install tests on Ubuntu and Mint / install tests in the Windows VM (needs `WINVM`) |
+| `make test` / `make test-deb` / `make test-windows` | unit tests / install tests on Ubuntu and Mint / install tests in the shared Windows VM (needs KVM) |
 
 `source.zip` holds everything needed to rebuild: unpack it and `make deb windows` produces both packages.
 
@@ -166,8 +166,8 @@ Needs Docker:
 
 ```sh
 scripts/build-windows.sh                 # PyInstaller + Inno Setup under Wine → releases/Fankata-<ver>-setup.exe + .sha256
-WINVM=<vm folder> scripts/test-windows-vm.sh   # install and check in the Windows 10 test VM; saves screenshots/windows/
+scripts/test-windows-vm.sh               # install and check in the shared Windows 10 test VM; saves screenshots/windows/
 ```
 
-`scripts/windows-vm/README.md` explains how to start the test VM: a Windows 10
-Enterprise 22H2 evaluation running under QEMU/KVM in Docker.
+`scripts/windows-vm/README.md` explains how the tests use the machine's shared Windows 10 22H2 VM
+(QEMU/KVM in Docker), which projects share through the [coworker protocol](https://github.com/MojoKata/coworker).
