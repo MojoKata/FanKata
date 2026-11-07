@@ -1,0 +1,54 @@
+{
+  "project": "fankata",
+  "network": [
+    {
+      "host": "github.com",
+      "why": "the repository and its releases"
+    },
+    {
+      "host": "objects.githubusercontent.com",
+      "why": "GitHub release downloads (LibreHardwareMonitor, PawnIO)"
+    },
+    {
+      "host": "release-assets.githubusercontent.com",
+      "why": "GitHub release downloads (newer host)"
+    },
+    {
+      "host": "pypi.org",
+      "why": "PyInstaller and the Python packages in the Windows build"
+    },
+    {
+      "host": "files.pythonhosted.org",
+      "why": "pip: the packages themselves"
+    },
+    {
+      "host": "registry-1.docker.io",
+      "why": "Docker Hub: the tobix/pywine and amake/innosetup build images"
+    },
+    {
+      "host": "auth.docker.io",
+      "why": "Docker Hub: sign-in tokens for pulls"
+    },
+    {
+      "host": "production.cloudflare.docker.com",
+      "why": "Docker Hub: image layers"
+    }
+  ],
+  "vms": {
+    "win10": {
+      "os": {
+        "family": "windows",
+        "name": "Windows 10",
+        "min": "10.0.17763",
+        "why": "Fankata runs on Windows 10 1809 or later (requirement 1.1; the installer's MinVersion 10.0.17763), and every release is tested on Windows 10"
+      },
+      "pips": [
+        {
+          "pip": "pillow",
+          "min": "13.0.0",
+          "why": "the VM folder's shot.sh turns QEMU screen captures into PNG with Pillow: its PNG size and quality measured the best (scripts/windows-vm/README.md)"
+        }
+      ]
+    }
+  }
+}

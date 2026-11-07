@@ -8,36 +8,22 @@
 #   scripts/test-windows-vm.sh [--keep-vm]
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-# The VM is shared with the machine's other projects through the coworker protocol
-# (MojoKata/coworker, installed in ${COWORKER_HOME:-~/coworker}): Fankata claims it, runs holding its
-# lock (another project's run is waited for), and reaches it as its vm.env says.
+# The VM is shared with the machine's other projects through the coworker protocol (MojoKata/coworker,
+# installed in ${COWORKER_HOME:-~/coworker}): "vms run" claims it with what .coworker/deps.json says
+# Fankata needs of it, waits for another project's run, starts it if it's down, checks the guest,
+# exports how to reach it (VM_SSH_*), and stops it after if this run started it.
 CW=${COWORKER_HOME:-$HOME/coworker}
 [ -x "$CW/bin/vms" ] || { echo "coworker isn't installed in $CW: run install.sh from a checkout of MojoKata/coworker" >&2; exit 1; }
 WINDOWS_VM=${WINDOWS_VM:-win10}
-"$CW/bin/vms" claim "$WINDOWS_VM" fankata >/dev/null
-[ -n "${COWORKER_VM_LOCKED:-}" ] || exec "$CW/bin/vms" lock "$WINDOWS_VM" fankata -- sh "$0" "$@"
-eval "$("$CW/bin/vms" env "$WINDOWS_VM")"    # VM_CONTAINER, VM_SSH_*
-R="$VM_SSH_USER@$VM_SSH_HOST"
-KEEP_VM=0
 for a in "$@"; do
-    case $a in --keep-vm) KEEP_VM=1 ;; *) echo "unknown option: $a" >&2; exit 2 ;; esac
+    case $a in --keep-vm) ;; *) echo "unknown option: $a" >&2; exit 2 ;; esac
 done
+[ -n "${COWORKER_VM_LOCKED:-}" ] || exec "$CW/bin/vms" run "$WINDOWS_VM" "$HERE" "$@" -- sh "$0" "$@"
+R="$VM_SSH_USER@$VM_SSH_HOST"
 SETUP=$(ls -t "$HERE"/releases/Fankata-*-setup.exe | head -1)
 OPTS="-q -i $VM_SSH_KEY -o StrictHostKeyChecking=no -o UserKnownHostsFile=$VM_KNOWN_HOSTS -o BatchMode=yes"
 SSH="ssh $OPTS -p $VM_SSH_PORT $R"
 SCP="scp $OPTS -P $VM_SSH_PORT"
-if [ -n "$VM_CONTAINER" ] && [ "$(docker inspect -f '{{.State.Running}}' "$VM_CONTAINER" 2>/dev/null)" != "true" ]; then
-    echo "== starting the VM"
-    docker start "$VM_CONTAINER" >/dev/null
-    # this run started it, so this run stops it, still holding the lock (the coworker protocol):
-    # an idle Windows VM holds 8 GB. docker stop shuts Windows down cleanly.
-    if [ "$KEEP_VM" = 0 ]; then
-        trap 'rc=$?; echo "== stopping the VM (this run started it; --keep-vm leaves it running)"
-              docker stop "$VM_CONTAINER" >/dev/null || rc=1; exit $rc' EXIT
-        trap 'exit 130' INT TERM
-    fi
-fi
-for i in $(seq 1 60); do $SSH "echo up" >/dev/null 2>&1 && break; sleep 5; done
 D=C:/Users/Public/fankata-test
 $SSH "New-Item -ItemType Directory -Force $D | Out-Null"
 $SCP "$SETUP" "$HERE"/scripts/windows-vm/*.ps1 "$HERE/scripts/demo/config.toml" "$R:$D/"
