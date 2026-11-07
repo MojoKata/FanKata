@@ -33,8 +33,12 @@ A VM has no fan controller, so fan control itself runs against the service's sim
 (`HKLM\SOFTWARE\Fankata\Simulate = 1`, set by installing with `/SIMULATE=1`). The screen is at
 http://127.0.0.1:8006 (or RDP to 127.0.0.1:3389) while the container runs. `vmctl.py` (in the VM's
 `storage/` folder) drives the QEMU monitor, for real-screen captures (`screendump`) and key presses
-(`sendkey`), which is how the UAC prompt and the interactive installer were tested. The image
-turns UAC off; set `EnableLUA = 1` and reboot to test the real prompt.
+(`sendkey`), which is how the UAC prompt and the interactive installer were tested: the VM folder's
+`shot.sh NAME` saves a capture as `desktop/NAME.png` and `keys.sh` sends keys. `shot.sh` turns QEMU's
+PPM into PNG with Pillow (PIL) on purpose: the PNG sizes and quality of the ways to do it were measured,
+and Pillow's were the best, so it stays even where it has to be installed (`python3 -m pip install
+--user pillow`, or `PYTHON=` a Python that has it). The image turns UAC off; set `EnableLUA = 1` and
+reboot to test the real prompt.
 
 Leave the VM as you found it (the coworker README, "VMs", "Rules"): Fankata's files on Windows go in
 `C:\Users\Public\fankata-test` and `C:\shots`, and the tests uninstall what they install. The VM's
