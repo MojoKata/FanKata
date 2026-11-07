@@ -44,18 +44,17 @@ reboot to test the real prompt.
 
 Leave the VM as you found it (the coworker README, "VMs", "Rules"): Fankata's files on Windows go in
 `C:\Users\Public\fankata-test` and `C:\shots`, and the tests uninstall what they install. The VM's
-account, key, ports and update policy are the machine owner's, in its own `README.md`.
+account, key, ports and update policy are the machine owner's: its recipe in coworker, and its own
+`README.md`.
 
 ## Rebuilding
 
-How the VM is built, and how to rebuild it, is in `~/coworker/vms/win10/README.md` (`rebuild.sh`);
-a rebuild keeps what `vm.env` says, and needs `/dev/kvm`. `oem-install.bat` here is the script the
-first VM's `oem/install.bat` was copied from (it installs OpenSSH at the end of setup).
+The VM is built from its recipe in coworker (`coworker/vms/win10/`, the coworker README, "VM
+recipes"): the image, the account, the ports and `oem/install.bat`, which installs OpenSSH and holds
+the VM on Windows 10 22H2. `coworker/bin/vms create win10 --yes` rebuilds it (a human's call: it
+replaces the VM every project uses; it needs `/dev/kvm`), and `coworker/bin/vms update win10`
+brings it up to date with Windows Update. Both reach Microsoft's servers; `coworker/bin/deps hosts`
+lists which. A change to how the VM is built is a PR to coworker, not a file here.
 
-The image downloads its ISO from `software-static.download.prss.microsoft.com` (about 4.7 GB):
-fetch it with `coworker/bin/downloads fetch` into the shared folder instead, and boot the
-container with `-v ~/coworker/downloads/win10x64.iso:/boot.iso` so it doesn't download another. For
-updates and activation inside the VM, also open Windows Update (`*.update.microsoft.com`,
-`*.delivery.mp.microsoft.com`, `*.windowsupdate.com`) and `*.sls.microsoft.com` /
-`licensing.mp.microsoft.com`. Avoid the 2021 LTSC evaluation ISO (`VERSION=ltsc10`): its licence
-has a fixed expiry date that has passed, so Windows shuts down every hour.
+Avoid the 2021 LTSC evaluation ISO (`VERSION=ltsc10`): its licence has a fixed expiry date that has
+passed, so Windows shuts down every hour.
