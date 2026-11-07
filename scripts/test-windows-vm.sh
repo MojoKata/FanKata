@@ -8,17 +8,15 @@
 #   scripts/test-windows-vm.sh [--keep-vm]
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-# The VM is shared with the machine's other projects through the coworker protocol (MojoKata/coworker,
-# installed in ${COWORKER_HOME:-~/coworker}): "vms run" claims it with what .coworker/deps.json says
+# The VM is shared with the machine's other projects through the coworker protocol (the coworker/
+# submodule, MojoKata/coworker, which checks the installed coworker and hands over): "vms run" claims it with what .coworker/deps.json says
 # Fankata needs of it, waits for another project's run, starts it if it's down, checks the guest,
 # exports how to reach it (VM_SSH_*), and stops it after if this run started it.
-CW=${COWORKER_HOME:-$HOME/coworker}
-[ -x "$CW/bin/vms" ] || { echo "coworker isn't installed in $CW: run install.sh from a checkout of MojoKata/coworker" >&2; exit 1; }
 WINDOWS_VM=${WINDOWS_VM:-win10}
 for a in "$@"; do
     case $a in --keep-vm) ;; *) echo "unknown option: $a" >&2; exit 2 ;; esac
 done
-[ -n "${COWORKER_VM_LOCKED:-}" ] || exec "$CW/bin/vms" run "$WINDOWS_VM" "$HERE" "$@" -- sh "$0" "$@"
+[ -n "${COWORKER_VM_LOCKED:-}" ] || exec "$HERE/coworker/bin/vms" run "$WINDOWS_VM" "$HERE" "$@" -- sh "$0" "$@"
 R="$VM_SSH_USER@$VM_SSH_HOST"
 SETUP=$(ls -t "$HERE"/releases/Fankata-*-setup.exe | head -1)
 OPTS="-q -i $VM_SSH_KEY -o StrictHostKeyChecking=no -o UserKnownHostsFile=$VM_KNOWN_HOSTS -o BatchMode=yes"

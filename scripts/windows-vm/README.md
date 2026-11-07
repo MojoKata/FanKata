@@ -3,8 +3,10 @@
 Fankata's install tests for the Windows build run in the machine's shared Windows 10 VM: `win10`
 in `$COWORKER_HOME/vms` (`~/coworker/vms` unless `COWORKER_HOME` says otherwise). The VM is
 described once, in its own folder (`~/coworker/vms/win10/README.md`, with `vm.env` saying how to
-reach it), and used through the [coworker protocol](https://github.com/MojoKata/coworker), whose
-commands are installed in `~/coworker/bin` by that repository's `install.sh`. Fankata claims the VM,
+reach it), and used through the [coworker protocol](https://github.com/MojoKata/coworker), which
+Fankata carries as the `coworker/` submodule and calls only through it (`coworker/bin/coworker
+status` first, on any machine: it says what's waiting, such as installing coworker). Fankata claims
+the VM, under its checkout directory's name (`FanKata`),
 and `scripts/test-windows-vm.sh` holds its lock (`vms lock`) from the first command to the last
 file copied back, so a run of another project waits for this one (and this one for theirs). The
 script starts the VM's container if it isn't running and then stops it when the run ends, pass or
@@ -13,11 +15,11 @@ left running.
 
 ## What Fankata claims, and why
 
-- **The VM `win10`** (`~/coworker/vms/win10.fankata`): the install tests of
+- **The VM `win10`** (`~/coworker/vms/win10.FanKata`): the install tests of
   `Fankata-<ver>-setup.exe`: the service and the PawnIO driver, the pipe protocol on real
   LibreHardwareMonitor and on simulated hardware, a crash restart, turning the service off and on as
   the signed-in user, and the screenshot tour in `screenshots/windows/{dark,light}`.
-- **The ISO `win10x64.iso`** (`win10x64.iso.fankata` in `~/coworker/downloads`): what the VM is
+- **The ISO `win10x64.iso`** (`win10x64.iso.FanKata` in `~/coworker/downloads`): what the VM is
   built from. It stays while a project claims it, so a rebuild needn't download 5 GB again. The
   `downloads` command fetches, claims, releases and lists it; never download an ISO into this
   repository's folders.
@@ -51,7 +53,7 @@ a rebuild keeps what `vm.env` says, and needs `/dev/kvm`. `oem-install.bat` here
 first VM's `oem/install.bat` was copied from (it installs OpenSSH at the end of setup).
 
 The image downloads its ISO from `software-static.download.prss.microsoft.com` (about 4.7 GB):
-fetch it with `~/coworker/bin/downloads fetch` into the shared folder instead, and boot the
+fetch it with `coworker/bin/downloads fetch` into the shared folder instead, and boot the
 container with `-v ~/coworker/downloads/win10x64.iso:/boot.iso` so it doesn't download another. For
 updates and activation inside the VM, also open Windows Update (`*.update.microsoft.com`,
 `*.delivery.mp.microsoft.com`, `*.windowsupdate.com`) and `*.sls.microsoft.com` /
