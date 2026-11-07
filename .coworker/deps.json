@@ -33,6 +33,32 @@
       "why": "Docker Hub: image layers"
     }
   ],
+  "container_images": [
+    {
+      "image": "ubuntu:22.04",
+      "why": "scripts/build-deb.sh builds the .deb in it (FANKATA_BUILD_IMAGE), and scripts/test-deb.sh installs it there"
+    },
+    {
+      "image": "ubuntu:24.04",
+      "why": "scripts/test-deb.sh installs the .deb on Ubuntu 24.04"
+    },
+    {
+      "image": "linuxmintd/mint21.3-amd64:latest",
+      "why": "scripts/test-deb.sh installs the .deb on Linux Mint 21.3"
+    },
+    {
+      "image": "linuxmintd/mint22.1-amd64:latest",
+      "why": "scripts/test-deb.sh installs the .deb on Linux Mint 22.1"
+    },
+    {
+      "image": "tobix/pywine:3.12",
+      "why": "scripts/build-windows.sh: PyInstaller under Wine"
+    },
+    {
+      "image": "amake/innosetup:latest",
+      "why": "scripts/build-windows.sh: Inno Setup under Wine makes the installer"
+    }
+  ],
   "vms": {
     "win10": {
       "os": {
