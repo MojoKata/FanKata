@@ -171,3 +171,11 @@ scripts/test-windows-vm.sh               # install and check in the shared Windo
 
 `scripts/windows-vm/README.md` explains how the tests use the machine's shared Windows 10 22H2 VM
 (QEMU/KVM in Docker), which projects share through the [coworker protocol](https://github.com/MojoKata/coworker).
+
+## Repository settings
+
+`scripts/repo-admin.sh check` reads this repository's GitHub settings back (exit 1 when one differs); `scripts/repo-admin.sh
+apply`, run by an admin with `gh` logged in, sets them: a ruleset on `master` (a pull request to
+merge, squash only, no force push or deletion), squash merging only with the branch deleted once merged, the Actions token
+read-only, actions pinned by SHA, fork pull requests' runs approved first, and private vulnerability
+reporting. Each MojoKata repository has the same script; only its settings block differs.
