@@ -1,37 +1,52 @@
 # Windows test VM
 
-> **Current VM (2026-10-01):** the VM is shared with AppKata. It lives in `~/kata-winvm`, and
-> its container is `kata-win10`. Start it with `docker start kata-win10`, then run
-> `WINVM=~/kata-winvm scripts/test-windows-vm.sh`. Run one project's tests at a time. The
-> commands below create a new VM from scratch.
+Fankata's install tests for the Windows build run in the machine's shared Windows 10 VM: `win10`
+in `$COWORKER_HOME/vms` (`~/coworker/vms` unless `COWORKER_HOME` says otherwise). The VM is
+described once, in its own folder (`~/coworker/vms/win10/README.md`, with `vm.env` saying how to
+reach it), and used through the [coworker protocol](https://github.com/MojoKata/coworker), whose
+commands are installed in `~/coworker/bin` by that repository's `install.sh`. Fankata claims the VM,
+and `scripts/test-windows-vm.sh` holds its lock (`vms lock`) from the first command to the last
+file copied back, so a run of another project waits for this one (and this one for theirs). The
+script starts the VM's container if it isn't running, and leaves it running.
 
-Limited testing of the Windows build in a Windows 10 Enterprise 22H2 *evaluation* VM (build 19045, 90-day licence)
-(QEMU/KVM in Docker, [`dockurr/windows`](https://github.com/dockur/windows)). A VM has no
-fan controller, so fan control itself runs against the service's simulated hardware
-(`HKLM\SOFTWARE\Fankata\Simulate = 1`, set by installing with `/SIMULATE=1`).
+## What Fankata claims, and why
 
-Start it (the image downloads the ISO from Microsoft and installs unattended, ~10 min):
+- **The VM `win10`** (`~/coworker/vms/win10.fankata`): the install tests of
+  `Fankata-<ver>-setup.exe`: the service and the PawnIO driver, the pipe protocol on real
+  LibreHardwareMonitor and on simulated hardware, a crash restart, turning the service off and on as
+  the signed-in user, and the screenshot tour in `screenshots/windows/{dark,light}`.
+- **The ISO `win10x64.iso`** (`win10x64.iso.fankata` in `~/coworker/downloads`): what the VM is
+  built from. It stays while a project claims it, so a rebuild needn't download 5 GB again. The
+  `downloads` command fetches, claims, releases and lists it; never download an ISO into this
+  repository's folders.
+
+## Running the tests
 
 ```sh
-mkdir -p ~/fankata-winvm/{storage,oem}
-cp scripts/windows-vm/oem-install.bat ~/fankata-winvm/oem/install.bat     # installs OpenSSH at the end of setup
-curl -L -o ~/fankata-winvm/oem/OpenSSH-Win64.zip \
-  https://github.com/PowerShell/Win32-OpenSSH/releases/download/10.0.0.0p2-Preview/OpenSSH-Win64.zip
-ssh-keygen -t ed25519 -N "" -f ~/fankata-winvm/vm_key && cp ~/fankata-winvm/vm_key.pub ~/fankata-winvm/oem/authorized_key.pub
-docker run -d --name fankata-win10 --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN \
-  -e VERSION=10e -e RAM_SIZE=8G -e CPU_CORES=4 -e DISK_SIZE=64G -e USERNAME=fankata -e PASSWORD=<pick one> \
-  -e USER_PORTS=22 -p 127.0.0.1:8006:8006 -p 127.0.0.1:3389:3389 -p 127.0.0.1:2222:22 \
-  -v ~/fankata-winvm/storage:/storage -v ~/fankata-winvm/oem:/oem dockurr/windows
+scripts/test-windows-vm.sh        # or: make test-windows
 ```
 
-The download needs `software-static.download.prss.microsoft.com` (about 4.7 GB). For updates
-and activation inside the VM, also open Windows Update (`*.update.microsoft.com`,
+A VM has no fan controller, so fan control itself runs against the service's simulated hardware
+(`HKLM\SOFTWARE\Fankata\Simulate = 1`, set by installing with `/SIMULATE=1`). The screen is at
+http://127.0.0.1:8006 (or RDP to 127.0.0.1:3389) while the container runs. `vmctl.py` (in the VM's
+`storage/` folder) drives the QEMU monitor, for real-screen captures (`screendump`) and key presses
+(`sendkey`), which is how the UAC prompt and the interactive installer were tested. The image
+turns UAC off; set `EnableLUA = 1` and reboot to test the real prompt.
+
+Leave the VM as you found it (the coworker README, "VMs", "Rules"): Fankata's files on Windows go in
+`C:\Users\Public\fankata-test` and `C:\shots`, and the tests uninstall what they install. The VM's
+account, key, ports and update policy are the machine owner's, in its own `README.md`.
+
+## Rebuilding
+
+How the VM is built, and how to rebuild it, is in `~/coworker/vms/win10/README.md` (`rebuild.sh`);
+a rebuild keeps what `vm.env` says, and needs `/dev/kvm`. `oem-install.bat` here is the script the
+first VM's `oem/install.bat` was copied from (it installs OpenSSH at the end of setup).
+
+The image downloads its ISO from `software-static.download.prss.microsoft.com` (about 4.7 GB):
+fetch it with `~/coworker/bin/downloads fetch` into the shared folder instead, and boot the
+container with `-v ~/coworker/downloads/win10x64.iso:/boot.iso` so it doesn't download another. For
+updates and activation inside the VM, also open Windows Update (`*.update.microsoft.com`,
 `*.delivery.mp.microsoft.com`, `*.windowsupdate.com`) and `*.sls.microsoft.com` /
 `licensing.mp.microsoft.com`. Avoid the 2021 LTSC evaluation ISO (`VERSION=ltsc10`): its licence
 has a fixed expiry date that has passed, so Windows shuts down every hour.
-
-Then `WINVM=~/fankata-winvm scripts/test-windows-vm.sh`. The screen is at http://127.0.0.1:8006
-(or RDP to 127.0.0.1:3389). `vmctl.py` (copied into the VM's storage folder) drives the QEMU
-monitor, for real-screen captures (`screendump`) and key presses (`sendkey`), which is how the
-UAC prompt and the interactive installer were tested. The image turns UAC off; set
-`EnableLUA = 1` and reboot to test the real prompt.
