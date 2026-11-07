@@ -7,7 +7,9 @@ reach it), and used through the [coworker protocol](https://github.com/MojoKata/
 commands are installed in `~/coworker/bin` by that repository's `install.sh`. Fankata claims the VM,
 and `scripts/test-windows-vm.sh` holds its lock (`vms lock`) from the first command to the last
 file copied back, so a run of another project waits for this one (and this one for theirs). The
-script starts the VM's container if it isn't running, and leaves it running.
+script starts the VM's container if it isn't running and then stops it when the run ends, pass or
+fail; `--keep-vm` leaves it running, for runs back to back, and a VM that was already running is
+left running.
 
 ## What Fankata claims, and why
 
@@ -24,6 +26,7 @@ script starts the VM's container if it isn't running, and leaves it running.
 
 ```sh
 scripts/test-windows-vm.sh        # or: make test-windows
+scripts/test-windows-vm.sh --keep-vm   # leave the VM running after, for runs back to back
 ```
 
 A VM has no fan controller, so fan control itself runs against the service's simulated hardware

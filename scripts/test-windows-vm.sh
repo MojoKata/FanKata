@@ -2,7 +2,10 @@
 # Install the latest Windows build in the test VM (see scripts/windows-vm/README.md)
 # and check it: service + PawnIO, the pipe protocol on real LibreHardwareMonitor and on
 # simulated hardware, crash restart, and screenshots of every screen into
-# screenshots/windows/{dark,light}.
+# screenshots/windows/{dark,light}. A run that starts the VM stops it at the end, pass or fail
+# (the coworker protocol); --keep-vm leaves it running, for runs back to back. A VM that was
+# already running is left running.
+#   scripts/test-windows-vm.sh [--keep-vm]
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 # The VM is shared with the machine's other projects through the coworker protocol
@@ -15,6 +18,10 @@ WINDOWS_VM=${WINDOWS_VM:-win10}
 [ -n "${COWORKER_VM_LOCKED:-}" ] || exec "$CW/bin/vms" lock "$WINDOWS_VM" fankata -- sh "$0" "$@"
 eval "$("$CW/bin/vms" env "$WINDOWS_VM")"    # VM_CONTAINER, VM_SSH_*
 R="$VM_SSH_USER@$VM_SSH_HOST"
+KEEP_VM=0
+for a in "$@"; do
+    case $a in --keep-vm) KEEP_VM=1 ;; *) echo "unknown option: $a" >&2; exit 2 ;; esac
+done
 SETUP=$(ls -t "$HERE"/releases/Fankata-*-setup.exe | head -1)
 OPTS="-q -i $VM_SSH_KEY -o StrictHostKeyChecking=no -o UserKnownHostsFile=$VM_KNOWN_HOSTS -o BatchMode=yes"
 SSH="ssh $OPTS -p $VM_SSH_PORT $R"
@@ -22,6 +29,13 @@ SCP="scp $OPTS -P $VM_SSH_PORT"
 if [ -n "$VM_CONTAINER" ] && [ "$(docker inspect -f '{{.State.Running}}' "$VM_CONTAINER" 2>/dev/null)" != "true" ]; then
     echo "== starting the VM"
     docker start "$VM_CONTAINER" >/dev/null
+    # this run started it, so this run stops it, still holding the lock (the coworker protocol):
+    # an idle Windows VM holds 8 GB. docker stop shuts Windows down cleanly.
+    if [ "$KEEP_VM" = 0 ]; then
+        trap 'rc=$?; echo "== stopping the VM (this run started it; --keep-vm leaves it running)"
+              docker stop "$VM_CONTAINER" >/dev/null || rc=1; exit $rc' EXIT
+        trap 'exit 130' INT TERM
+    fi
 fi
 for i in $(seq 1 60); do $SSH "echo up" >/dev/null 2>&1 && break; sleep 5; done
 D=C:/Users/Public/fankata-test
